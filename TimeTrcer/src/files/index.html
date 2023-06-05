@@ -1,0 +1,84 @@
+<!--
+Author: 
+    Nickname: gtg2619
+    QQ: 2497404097
+Hint1: "It's a free XSS challenge. The flag has been set to a note whose key has the highest privileges"
+-->
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<title>Safe-Note Panel</title>
+<style>
+    @font-face {
+        font-family: 'Press Start 2P';
+        font-style: normal;
+        font-weight: 400;
+        src: url(./PressStart2P-Regular.ttf) format('truetype');
+    }
+    html {
+        background-color: bisque;
+    }
+    h1,p {
+        position: relative;
+        Text-align: center;
+        font-family: 'Press Start 2P';
+    }
+    input, textarea {
+        position: fixed;
+        /* left: 20%; */
+
+        outline-style: none ;
+        border: 1px solid #ccc; 
+        border-radius: 3px;
+        padding: 14px 14px;
+        width: 35%;
+        
+    }
+    input:focus, textarea:focus {
+        border-color: #5c330fb6;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+    }
+    button {
+        position: fixed;
+        width: 200px;
+        line-height: 46px;
+        background-color: #000000;
+        color: #ffffff;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 27px;
+    }
+</style>
+<body>
+    <div style="left:10%">
+        <h1>SAFENOTE PANEL</h1>
+        <p>Hash&nbsp;+&nbsp;PrivateKey&nbsp;=&gt;&nbsp;Validation Authority</p>
+        <input style="left:10%;top:20%;font-size: 24px;" id="input_title" placeholder="title"/>
+        <textarea style="left:10%;top:40%;" rows="20" id="input_content" placeholder="content"></textarea>
+        <div id="output_link" style="position:fixed;left:55%;top:23%;"></div>
+        <textarea style="left:55%;top:40%;" rows="20" id="output_key" readonly="readonly" placeholder="PrivateKey"></textarea>
+    </div>
+    <button style="height: 46px;top: 31%;left: 44%;" onclick="creatNote()">CreatNote&gt;&gt;</button>
+    <script>
+        function creatNote(){
+            fetch('/api/createNote',{
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({title: document.getElementById('input_title').value,
+                                        content: document.getElementById('input_content').value})
+            })
+            .then(response => {return response.json();})
+            .then(data => {
+                document.getElementById('output_link').innerHTML = `<a href="${data.message.url}">${data.message.url}</a>`;
+                document.getElementById('output_key').innerHTML = data.message.privateKey;
+            })
+            .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>

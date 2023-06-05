@@ -1,0 +1,71 @@
+<!--
+Author: 
+    Nickname: gtg2619
+    QQ: 2497404097
+Hint1: "It's a free XSS challenge. The flag has been set to a note whose key has the highest privileges"
+-->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<title>Safe-Note Viewer</title>
+<style>
+    @font-face {
+        font-family: 'Press Start 2P';
+        font-style: normal;
+        font-weight: 400;
+        src: url(./PressStart2P-Regular.ttf) format('truetype');
+    }
+    html {
+        background-color: bisque;
+    }
+    h1,h2 {
+        position: relative;
+        Text-align: center;
+        font-family: 'Press Start 2P';
+    }
+    button {
+        position: fixed;
+        width: 200px;
+        line-height: 46px;
+        background-color: #000000;
+        color: #ffffff;
+        font-size: 18px;
+        text-align: center;
+        border-radius: 27px;
+    }
+</style>
+<body>
+    <div>
+        <h1>SAFENOTE VIEWER</h1>
+        <h2 id="title"></h2>
+        <br/>
+        <h2 id="content"></h2>
+        <button id="report" style="top:40%;left:44%">Report It</button>
+    </div>
+    <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        let hash = new URLSearchParams(location.search).get('hash');
+            (async ()=>{
+                privateKey = prompt('Provide your Key');
+                (async () =>{
+                if (confirm('Using this pirvateKey? Cancel For retype')) {
+                    var data = await( await fetch(`/api/viewNote/${hash}`,{
+                        method: 'POST',
+                        headers: {"Content-Type":"application/json"},
+                        body: JSON.stringify({privateKey: privateKey})
+                    })).json();
+                    title.innerHTML = data.message.title;
+                    await sleep(500); // weird? just designed for challenge:)
+                    content.innerHTML = data.message.content;
+                }})()})()
+        report.onclick = async () => {
+            alert(await (await fetch(`/api/report/${hash}`)).text());
+        }
+    </script>
+</body>
+</html>
